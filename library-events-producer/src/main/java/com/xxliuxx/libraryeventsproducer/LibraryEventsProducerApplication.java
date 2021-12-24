@@ -11,7 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class LibraryEventsProducerApplication {
 
   public static void main(String[] args) {
-    SpringApplication.run(LibraryEventsProducerApplication.class, args);
+    SpringApplication.run(LibraryEventsProducerApplication.class);
   }
 
 }
