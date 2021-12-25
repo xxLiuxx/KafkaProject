@@ -76,7 +76,7 @@ public class LibraryEventProducer {
     return sendResult;
   }
 
-  public void sendLibraryEventWithHeader(LibraryEvent libraryEvent)
+  public ListenableFuture<SendResult<Integer, String>> sendLibraryEventWithHeader(LibraryEvent libraryEvent)
       throws JsonProcessingException {
     // get the key and value of the message
     Integer key = libraryEvent.getLibraryEventId();
@@ -98,6 +98,8 @@ public class LibraryEventProducer {
         handleFailure(key, value, ex);
       }
     });
+
+    return listenableFuture;
   }
 
   private ProducerRecord<Integer, String> buildProducerRecord(String topic, Integer key,

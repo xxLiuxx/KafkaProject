@@ -4,9 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.xxliuxx.libraryeventsproducer.domain.LibraryEvent;
 import com.xxliuxx.libraryeventsproducer.domain.LibraryEventType;
 import com.xxliuxx.libraryeventsproducer.producer.LibraryEventProducer;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,7 +24,7 @@ public class LibraryEventController {
   private LibraryEventProducer libraryEventproducer;
 
   @PostMapping("/v1/libraryEvent")
-  public ResponseEntity<LibraryEvent> postLibraryEvent(@RequestBody LibraryEvent libraryEvent)
+  public ResponseEntity<LibraryEvent> postLibraryEvent(@RequestBody @Valid LibraryEvent libraryEvent)
       throws JsonProcessingException {
 
     // invoke kafka producer

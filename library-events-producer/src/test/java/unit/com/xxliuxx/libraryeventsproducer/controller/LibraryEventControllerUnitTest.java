@@ -2,6 +2,7 @@ package com.xxliuxx.libraryeventsproducer.controller;
 
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -44,17 +45,39 @@ public class LibraryEventControllerUnitTest {
 
     LibraryEvent libraryEvent = LibraryEvent.builder()
         .libraryEventId(null)
-        .book(new Book())
+        .book(book)
         .build();
 
     // expect
     String json = objectMapper.writeValueAsString(libraryEvent);
-    doNothing().when(libraryEventProducer)
-        .sendLibraryEventWithHeader(isA(LibraryEvent.class));
+    when(libraryEventProducer.sendLibraryEventWithHeader(isA(LibraryEvent.class))).thenReturn(null);
 
     mockMvc.perform(post("/v1/libraryEvent").content(json).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isCreated());
 
   }
 
+
+  @Test
+  public void postLibraryEvent_4xx() throws Exception {
+    // given
+    Book book = Book.builder()
+        .bookId(null)
+        .bookName(null)
+        .bookAuthor("Udemy")
+        .build();
+
+    LibraryEvent libraryEvent = LibraryEvent.builder()
+        .libraryEventId(null)
+        .book(book)
+        .build();
+
+    // expect
+    String json = objectMapper.writeValueAsString(libraryEvent);
+    when(libraryEventProducer.sendLibraryEventWithHeader(isA(LibraryEvent.class))).thenReturn(null);
+
+    mockMvc.perform(post("/v1/libraryEvent").content(json).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().is4xxClientError());
+
+  }
 }
