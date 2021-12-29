@@ -84,11 +84,52 @@ public class LibraryEventsControllerIntegrationTest {
         HttpMethod.POST, request, LibraryEvent.class);
 
     // then
+    // check the http status
     assertEquals(HttpStatus.CREATED, status.getStatusCode());
 
+
+    // check the content
     ConsumerRecord<Integer, String> record = KafkaTestUtils.getSingleRecord(consumer,
         "library-events");
     String expectedRecord = "{\"libraryEventId\":null,\"libraryEventType\":\"NEW\",\"book\":{\"bookId\":123,\"bookName\":\"Kafka\",\"bookAuthor\":\"Udemy\"}}";
+
+    String value = record.value();
+    assertEquals(expectedRecord, value);
+
+  }
+
+  @Test
+  public void putLibraryEvent() {
+
+    // given
+    Book book = Book.builder()
+        .bookId(123)
+        .bookName("Kafka")
+        .bookAuthor("Udemy")
+        .build();
+
+    LibraryEvent libraryEvent = LibraryEvent.builder()
+        .libraryEventId(111)
+        .book(book)
+        .build();
+
+    HttpHeaders httpHeaders = new HttpHeaders();
+    httpHeaders.set("content-type", MediaType.APPLICATION_JSON.toString());
+    HttpEntity<LibraryEvent> request = new HttpEntity<>(libraryEvent, httpHeaders);
+
+    // when
+    ResponseEntity<LibraryEvent> status = testRestTemplate.exchange("/v1/libraryEvent",
+        HttpMethod.PUT, request, LibraryEvent.class);
+
+    // then
+    // check the http status
+    assertEquals(HttpStatus.OK, status.getStatusCode());
+
+
+    // check the content
+    ConsumerRecord<Integer, String> record = KafkaTestUtils.getSingleRecord(consumer,
+        "library-events");
+    String expectedRecord = "{\"libraryEventId\":111,\"libraryEventType\":\"UPDATE\",\"book\":{\"bookId\":123,\"bookName\":\"Kafka\",\"bookAuthor\":\"Udemy\"}}";
 
     String value = record.value();
     assertEquals(expectedRecord, value);

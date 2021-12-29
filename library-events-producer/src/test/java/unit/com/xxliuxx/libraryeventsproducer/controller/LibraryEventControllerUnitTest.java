@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -77,6 +78,52 @@ public class LibraryEventControllerUnitTest {
     when(libraryEventProducer.sendLibraryEventWithHeader(isA(LibraryEvent.class))).thenReturn(null);
 
     mockMvc.perform(post("/v1/libraryEvent").content(json).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().is4xxClientError());
+
+  }
+
+  @Test
+  public void putLibraryEvent() throws Exception {
+    // given
+    Book book = Book.builder()
+        .bookId(123)
+        .bookName("Kafka")
+        .bookAuthor("Udemy")
+        .build();
+
+    LibraryEvent libraryEvent = LibraryEvent.builder()
+        .libraryEventId(111)
+        .book(book)
+        .build();
+
+    // expect
+    String json = objectMapper.writeValueAsString(libraryEvent);
+    when(libraryEventProducer.sendLibraryEventWithHeader(isA(LibraryEvent.class))).thenReturn(null);
+
+    mockMvc.perform(put("/v1/libraryEvent").content(json).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk());
+
+  }
+
+  @Test
+  public void putLibraryEvent_4xx() throws Exception {
+    // given
+    Book book = Book.builder()
+        .bookId(123)
+        .bookName("Kafka")
+        .bookAuthor("Udemy")
+        .build();
+
+    LibraryEvent libraryEvent = LibraryEvent.builder()
+        .libraryEventId(null)
+        .book(book)
+        .build();
+
+    // expect
+    String json = objectMapper.writeValueAsString(libraryEvent);
+    when(libraryEventProducer.sendLibraryEventWithHeader(isA(LibraryEvent.class))).thenReturn(null);
+
+    mockMvc.perform(put("/v1/libraryEvent").content(json).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().is4xxClientError());
 
   }
